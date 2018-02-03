@@ -1,0 +1,23 @@
+# general http info
+http:
+    user: www-data
+    group: www-data
+    root: /srv/http
+
+# system services
+services:
+    nginx: nginx
+    mariadb: mariadb
+    mysql: mysqld
+    php: php7.0-fpm
+    service: mariadb
+
+nginx:
+    # path to fastcgi_params file
+    fastcgi_params: /etc/nginx/fastcgi_params
+
+php:
+    init: /etc/php/7.0/fpm/php.ini
+    fpm_ini: /etc/php/7.0/fpm/php-fpm.conf
+    fpm_sock: unix:/run/php/php7.0-fpm.sock
+
