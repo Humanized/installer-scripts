@@ -27,30 +27,6 @@ http:
     # use this template file
     template: ''
 
-    # extract site files from this archive source
-    archive:
-        # unarchive.src
-        src: ''
-        # destination sub-directory in server root directory
-        dest: ''
-        # unarchive.remote_src
-        remote_src: false|true
-        # extract file from this archive subdir
-        strip: ''
-
-    # extract site files from this git repository
-    # clone will fails if there is yet files in this
-    # repos
-    git:
-        # destination sub-directory in server root directory
-        dest: ''
-        # git.repo
-        repo: ''
-        # git.update
-        pull: false|true
-        # git.force
-        force: false|true
-
 # setup php
 php:
     # modules names to enable
@@ -70,8 +46,41 @@ sql:
     encoding: ''
 ```
 
+
+Setup/Install site files:
+
+```
+# extract site files from this archive source. If the directory
+# exists yet, it wont do it (except if `force` is true)
+bundle:
+    # `unarchive.src`; must be defined to enable the feature
+    src: ''
+    # force archive extraction in target dir
+    force: false
+    # unarchive.remote_src
+    remote_src: false|true
+    # extract file from this archive subdir
+    strip: ''
+
+# extract site files from this git repository
+# clone will fails if there is yet files in this
+# repos
+git:
+    # git.repo
+    repo: ''
+    # git.update
+    pull: false|true
+    # git.force
+    force: false|true
+```
+
 Dependencies
 ------------
+
+TODO/FIXME
+----------
+- tasks/bundle.yml: cleanup files in `archive_dest` when strip is done
+- tasks/git.yml: force argument -- not similar to bundle's; need coherence
 
 
 Example Playbook
@@ -79,7 +88,7 @@ Example Playbook
 
     - hosts: servers
       roles:
-         - { role: nginx, domain: bkfox.net }
+         - { role: nginx, server: { domain: bkfox.net } }
 
 License
 -------
@@ -88,5 +97,4 @@ BSD
 Author Information
 ------------------
 By bkfox for humanized.
-
 

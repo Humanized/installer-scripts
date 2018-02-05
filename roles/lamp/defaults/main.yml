@@ -1,2 +1,41 @@
----
-# defaults file for nginx
+#
+# Default values for optional fields. The values not defined and used in 
+# tasks are required
+#
+
+# optional modules
+server__:
+    http:
+        server: 'nginx'
+        enabled: false
+    php:
+        modules: null
+    sql:
+        server: 'mariadb'
+        password: null
+        config_file: null
+        collation: null
+        encoding: null
+
+    bundle:
+        force: false
+        remote_src: false
+        strip: ''
+    git:
+        pull: false
+        force: false
+
+
+
+server_:
+    root: '{{ lamp.http.root }}/{{ server.domain }}'
+
+    # optional modules
+    http: '{{ server.http is defined and server__.http }}'
+    php:  '{{ server.php is defined and server__.php }}'
+    sql:  '{{ server.sql is defined and server__.sql }}'
+
+    bundle: '{{ server.bundle is defined and server__.bundle }}'
+    git: '{{ server.git is defined and server__.git }}'
+
+

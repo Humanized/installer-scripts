@@ -1,27 +1,31 @@
+#
+# Install required packages for Debian
+#
+
 - name: nginx install
   apt: name={{ item }} state=latest
   with_items:
       - nginx
-  when: server.http is defined and server.http.server == 'nginx'
+  when: server.http and server.http.server == 'nginx'
 
 - name: php install
   apt: name={{ item }} state=latest
   with_items:
       - php
       - php-fpm
-  when: server.php is defined
+  when: server.php
 
 - name: php modules install
   apt: name=php-{{ item }} state=latest
   with_items: '{{ server.php.modules }}'
-  when: server.php is defined
+  when: server.php and server.php.modules
 
-- name: server.sql.server install
+- name: sql server install
   apt: name={{ item }} update_cache=yes state=latest
   with_items:
       - python-mysqldb
       - php-mysql
       - '{{ server.sql.server }}-server'
-  when: server.sql is defined
+  when: server.sql and server.sql.server in ['mariadb','mysql']
 
 

@@ -1,0 +1,34 @@
+
+- block:
+  - set_fact: bundle=null
+  - set_fact: git=null
+  - set_fact: db=null
+
+  - set_fact: bundle='{{ humhub_.bundle|combine(humhub.bundle, recursive=True) }}'
+    when: humhub.bundle is defined
+  - set_fact: git='{{ humhub_.git|combine(humhub.git, recursive=True) }}'
+    when: humhub.git is defined
+  - set_fact: db='{{ humhub_.db|combine(humhub.db, recursive=True) }}'
+    when: humhub.db is defined
+
+- name: setup humble site
+  include_role:
+    name: lamp
+  vars:
+    server:
+        domain: '{{ humhub.domain }}'
+        http:
+            enabled: true
+            template: 'roles/humhub/templates/nginx.j2'
+        bundle: '{{ bundle }}'
+        git: '{{ git }}'
+        php:
+            modules:
+            - curl
+            - gd
+            - intl
+            - ldap
+            - zip
+        sql: '{{ db }}'
+
+

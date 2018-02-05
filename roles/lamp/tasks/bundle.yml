@@ -1,0 +1,46 @@
+#
+# Install site files from an archive
+#
+
+- set_fact:
+    download_dir: '{% if server.bundle.strip %}/tmp/{{ server.domain }}{% endif %}'
+
+- stat: path="{{ server.root }}/index.php"
+  register: p
+
+- when: not p.stat.exists or server.bundle.force
+  block:
+    - name: backup files
+      when: p.stat.exists
+      block:
+      - file: path='{{ server.root }}.bkp' state=absent
+      - shell: mv '{{ server.root}}' '{{ server_root }}.bkp'
+
+    - name: ensure destination dirs
+      block:
+      - file: path="{{ download_dir }}" state=directory
+        when: download_dir != ''
+      - file: path="{{ server.root }}" state=directory
+
+    - name: data retrieval and extraction
+      unarchive:
+        src: '{{ server.bundle.src }}'
+        remote_src: '{{ server.bundle.remote_src|default(false) }}'
+        dest: '{{ download_dir or server.root }}'
+
+    - name: strip directory
+      block:
+      - shell: 'mv "{{ download_dir }}/{{ server.bundle.strip }}"/* {{ server.root }}'
+      - file:
+            path: "{{ download_dir }}"
+            state: absent
+        when: server.bundle.strip is defined
+
+    # files owner
+    - file:
+        path: "{{ server.root }}"
+        owner: "{{ lamp.http.user}}"
+        group: "{{ lamp.http.group }}"
+        recurse: yes
+
+

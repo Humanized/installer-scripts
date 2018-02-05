@@ -1,0 +1,14 @@
+humhub_:
+    bundle:
+        src: 'https://www.humhub.org/en/download/package/humhub-{{ humhub.bundle.version }}.zip'
+        remote_src: true
+        strip: 'humhub-{{ humhub.bundle.version }}'
+
+    git:
+        repo: 'https://github.com/humhub/humhub.git'
+
+    db:
+        collation: utf8_general_ci
+        encoding: utf8
+
+

@@ -1,117 +1,48 @@
-# - FIXME: git clone & nginx logs => must be done after
 
 
-- name: platform specific vars
-  include_vars:
-    file: '{{ ansible_distribution }}.yml'
-    name: lamp
-
-#- name: platform specific tasks
-# include_tasks: '{{ ansible_distribution }}.yml'
-
-- name: setup nginx
+- name: platform specific
   block:
-  - set_fact:
-        server_root: '{{ lamp.http.root}}/{{ domain }}'
-        server_config: '/etc/nginx/sites-available/{{ domain }}'
-        server_enabled_config: '/etc/nginx/sites-enabled/{{ domain }}'
-  - name: nginx dirs
-    file:
-        path: '{{ item }}'
-        state: directory
-        owner: '{{ lamp.http.user }}'
-        group: '{{ lamp.http.group }}'
-    with_items:
-    - '{{ lamp.http.root }}'
-    - /etc/nginx/sites-available
-    - /etc/nginx/sites-enabled
-    - '{{ server_root }}'
-  - name: install site config
-    template:
-        src: '{{ server.http.template }}'
-        dest: '{{ server_config }}'
-        owner: '{{ lamp.http.user }}'
-        group: '{{ lamp.http.group }}'
-  - name: site enabled status
-    file:
-        src: '{{ server_config }}'
-        dest: '{{ server_enabled_config }}'
-        state: '{% if server.http.enabled %}link{% else %}absent{% endif %}'
-    when: server.http.enabled|default(false)
+  - include_vars:
+        file: '{{ ansible_distribution }}.yml'
+        name: lamp
 
-  - name: site from archive
-    block:
-    - set_fact:
-        archive_dest: '{% if server.http.archive.strip|default(false) %}/tmp/{{ server.domain }}{% endif %}'
-        files_dest: '{{ server_root }}/{{ server.http.archive.dest|default("") }}'
-    - file: path="{{ archive_dest }}" state=directory
-      when: archive_dest != ''
-    - file: path="{{ files_dest }}" state=directory
-    - shell: "echo {{ archive_dest or files_dest }} > /tmp/a"
-    - unarchive:
-        src: '{{ server.http.archive.src }}'
-        remote_src: '{{ server.http.archive.remote_src|default(false) }}'
-        dest: '{{ archive_dest or files_dest }}'
-    - block:
-      - shell: 'mv "{{ archive_dest }}/{{ server.http.archive.strip }}"/* {{ files_dest }}'
-      - file:
-            path: "{{ archive_dest }}"
-            state: absent
-        when: server.http.archive.strip is defined
-    - file:
-        path: "{{ files_dest }}"
-        owner: "{{ lamp.http.user}}"
-        group: "{{ lamp.http.group }}"
-        recurse: yes
-    when: server.http.archive is defined and server.http.src is defined
+- set_fact: server_='{{ server_|combine(server, recursive=True) }}'
+- set_fact: lamp_='{{ lamp }}'
 
-  - name: site from git
-    git:
-        repo: '{{ server.http.git.repo }}'
-        dest: '{{ server_root }}/{{ server.http.git.dest|default("") }}'
-        update: '{{ server.http.git.pull|default(false) }}'
-        force: '{{ server.http.git.force|default(false) }}'
-        clone: yes
-    when: server.http.git is defined and server.http.git.repo is defined
 
-  # ensure existence of server log
-  - name: server log dir
-    block:
-    - shell: |
-            grep -m1 --color=never "access_log" "{{ server_config }}" |
-            sed "s/.*access_log\s\+[\"']\?\(.*\)[\"']\?;/\1/" -
-      register: access_log
-    - shell: |
-            grep -m1 --color=never "error_log" "{{ server_config }}" |
-            sed "s/.*error_log\s\+[\"']\?\(.*\)[\"']\?;/\1/" -
-      register: error_log
-    - file:
-        path: '{{ item }}'
-        state: directory
-        owner: '{{ lamp.http.user }}'
-        group: '{{ lamp.http.group }}'
-      with_items:
-      - '{{ access_log.stdout|dirname }}'
-      - '{{ error_log.stdout|dirname }}'
-  when: server.http is defined and server.http.server == 'nginx'
+- include_tasks: '{{ task.file }}'
+  when: task.when
+  vars:
+    server: '{{ server_ }}'
+    lamp: '{{ lamp_ }}'
+  loop_control:
+      loop_var: task
+  with_items:
+  # basic setup
+  - file: '{{ ansible_distribution }}.yml'
+    when: true
+  - file: '{{ server_.http.server }}.yml'
+    when: '{{ server_.http }}'
+
+  # site files
+  - file: bundle.yml
+    when: '{{ server_.bundle and server_.bundle.src|default(false) }}'
+  - file: git.yml
+    when: '{{ server_.git and server_.git.repo|default(false) }}'
+
+  # post install
+  - file: '{{ server_.http.server }}_post.yml'
+    when: '{{ server_.http }}'
+        #- nginx_post.yml
+        #- sql.yml
+
 
 - name: setup mysql
-  block:
-  - name: dabatase
-    mysql_db:
-        name: '{{ domain|replace(".","_") }}'
-        config_file: '{{ server.sql.config_file|default("~/.my.cnf") }}'
-        collation: '{{ server.sql.collation|default("") }}'
-        encoding: '{{ server.sql.encoding|default("") }}'
-  - name: database user
-    mysql_user:
-        name: '{{ domain|replace(".","_") }}'
-        config_file: '{{ server.sql.config_file|default("~/.my.cnf") }}'
-        password: '{{ server.sql.password|default("") }}'
-        priv: "{{ domain|replace('.','_') }}.*:ALL,GRANT"
-  when: server.sql is defined and server.sql.server in ['mysql', 'mariadb']
+  include_tasks: sql.yml
+  when: server.sql is defined and
+        server.sql.server in ['mysql', 'mariadb']
 
-- name: reload services
+- name: restart services
   service: name={{ item }} state=restarted
   with_items:
       - '{% if server.http is defined %}{{ lamp.services[server.http.server] }}{% endif %}'
