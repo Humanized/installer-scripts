@@ -4,7 +4,7 @@
 
 - include_vars: nginx.yml
 
-- name: setup nginx dirs
+- name: nginx directories
   file:
       path: '{{ item }}'
       state: directory
@@ -16,12 +16,18 @@
   - /etc/nginx/sites-enabled
   - '{{ vhost_.root }}'
 
-- name: install site config
+- name: nginx config files
   template:
-      src: '{{ vhost_.http.template or "templates/nginx.j2" }}'
-      dest: '{{ server_config }}'
+      src: '{{ item.src }}'
+      dest: '{{ item.dest }}'
       owner: '{{ vhost_dist.http.user }}'
       group: '{{ vhost_dist.http.group }}'
+  with_items:
+  - src: '{{ vhost_.http.template or "templates/nginx.j2" }}'
+    dest: '{{ server_config }}'
+  - src: templates/nginx_ssl.j2
+    dest: /etc/nginx/conf.d/vhost_ssl.conf
+
 - name: site activation
   when: vhost_.http.enabled|default(false)
   file:

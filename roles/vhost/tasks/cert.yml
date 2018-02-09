@@ -1,0 +1,12 @@
+- service:
+    name: '{{ vhost_dist.services[vhost_.http.server] }}'
+    state: stopped
+
+- name: certbot
+  shell: >
+    certbot certonly -n
+    -d {{ vhost.domain }} -m {{ vhost.admin_email }}
+    --standalone --preferred-challenges http
+    --agree-tos --dry-run
+
+

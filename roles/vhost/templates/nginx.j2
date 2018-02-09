@@ -12,8 +12,8 @@ server {
 
     ssl_certificate /etc/letsencrypt/live/{{ vhost_.domain }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ vhost_.domain }}/privkey.pem;
-    ssl_protocols TLSv1.1 TLSv1.2;
-    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    include /etc/nginx/conf.d/vhost_ssl.conf
 {% endif %}
 
     access_log /srv/http/{{ vhost_.domain }}/logs/access.log;
@@ -23,10 +23,6 @@ server {
 
     location /logs {
         deny all;
-    }
-
-    location /.well-known {
-        alias /srv/www/{{ vhost_.domain }}/.well-known ;
     }
 
     {{ vhost_.http.config_extra }}
