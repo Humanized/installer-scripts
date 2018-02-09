@@ -62,11 +62,10 @@ vhost:
         # mysql_db.encoding
         encoding: ''
 
+    #
+    # install files on the http server
+    #
 
-# Setup/Install site files:
-On the `vhost` object:
-
-    ```
     # extract site files from this archive source. If the directory
     # exists yet, it wont do it (except if `force` is true)
     bundle:
@@ -90,6 +89,8 @@ On the `vhost` object:
         # git.force
         force: false|true
 ```
+
+
 
 
 TODO/FIXME

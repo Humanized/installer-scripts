@@ -43,6 +43,10 @@ humhub:
         server: mariadb
         # database password to use
         password:
+
+   # overwrite humhub's generated vhost values
+   vhost:
+        # ... vhost role arguments
 ```
 
 

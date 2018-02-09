@@ -4,19 +4,16 @@
     # need a different varname: see ansible issue #22025
     humhub_: '{{ humhub_|combine(humhub, recursive=True) }}'
 
+# generate vhost values
 - set_fact:
-    http_cfg: '{% include("roles/humhub/templates/nginx.j2") %}'
-
-- name: setup humble site
-  include_role:
-    name: vhost
+    humhub_vhost_: '{{ humhub_vhost_|combine(humhub.vhost|default({}), recursive=True) }}'
   vars:
-    vhost:
+    humhub_vhost_:
         domain: '{{ humhub.domain }}'
         admin_email: '{{ humhub.admin_email }}'
         http:
             enabled: true
-            config_extra: '{{ http_cfg }}'
+            config_extra: '{{ lookup("template", "nginx.j2") }}'
         bundle: '{{ humhub_.bundle }}'
         git: '{{ humhub_.git }}'
         php:
@@ -27,5 +24,14 @@
             - ldap
             - zip
         sql: '{{ humhub_.db }}'
+
+- debug: var=humhub_vhost_
+- meta: end_play
+
+- name: setup humble site
+  include_role:
+    name: vhost
+  vars:
+    vhost: '{{ humhub_vhost_ }}'
 
 

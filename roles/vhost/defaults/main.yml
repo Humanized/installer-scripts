@@ -19,6 +19,7 @@ vhost__:
         config_file: null
         collation: null
         encoding: null
+        migrations: []
 
     bundle:
         force: false
