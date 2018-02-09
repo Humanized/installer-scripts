@@ -1,29 +1,14 @@
 # Installer Scripts
+Ansible script to install services:
+* vhost: LAMP solutions (nginx, mariadb/mysql, php...)
+* humhub
+* jitsi
 
-## Roles
-Please look in their respective directory for more information about each role
+Thoses are made as reusable roles and customizable. Look at their respective README files for more info about features and usage.
 
-### `lamp` Role
-Setup a LAMP server.
-
-Supported solutions:
-- Nginx
-- MariaDB
-- Php
-
-Supported platforms:
-- Debian
-
-
-### `humhub`
-Setup a Humhub service using `lamp` role.
-
-Supported solutions:
-- Nginx
-- Mysql
-
-Requirements:
-- `lamp`
-
+## TODO
+- vhost: init sql db with one or more dump files
+- vhost: certbot cron job
+- Yii integration
 
 

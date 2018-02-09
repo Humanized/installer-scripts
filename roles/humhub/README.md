@@ -1,12 +1,11 @@
-Role Name
+humhub
 =========
 
 Install Humhub.
 
 Requirements
 ------------
-LAMP server
-
+`vhost` role.
 
 Role Variables
 --------------
@@ -44,7 +43,6 @@ humhub:
         server: mariadb
         # database password to use
         password:
-
 ```
 
 
@@ -70,4 +68,5 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+bkfox
+

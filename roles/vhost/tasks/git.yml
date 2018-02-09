@@ -1,0 +1,13 @@
+#
+# Install site files from git
+#
+
+- name: site from git
+  git:
+    repo: '{{ vhost_.http.git.repo }}'
+    dest: '{{ server_root }}'
+    update: '{{ vhost_.http.git.pull|default(false) }}'
+    force: '{{ vhost_.http.git.force|default(false) }}'
+    clone: yes
+
+

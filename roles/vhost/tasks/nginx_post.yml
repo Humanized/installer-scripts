@@ -18,8 +18,8 @@
   - file:
       path: '{{ item }}'
       state: directory
-      owner: '{{ lamp.http.user }}'
-      group: '{{ lamp.http.group }}'
+      owner: '{{ vhost_dist.http.user }}'
+      group: '{{ vhost_dist.http.group }}'
       # TODO: perms
     with_items:
     - '{{ access_log.stdout|dirname }}'

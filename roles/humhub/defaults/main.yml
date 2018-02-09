@@ -1,4 +1,4 @@
-humhub_:
+humhub__:
     bundle:
         src: 'https://www.humhub.org/en/download/package/humhub-{{ humhub.bundle.version }}.zip'
         remote_src: true
@@ -10,5 +10,11 @@ humhub_:
     db:
         collation: utf8_general_ci
         encoding: utf8
+
+humhub_:
+    bundle: '{{ humhub.bundle is defined and humhub__.bundle }}'
+    git: '{{ humhub.git is defined and humhub__.git }}'
+    db: '{{ humhub.db is defined and humhub__.db }}'
+
 
 

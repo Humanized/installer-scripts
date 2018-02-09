@@ -1,0 +1,60 @@
+
+- set_fact:
+    vhost_modules:
+        http: '{{ vhost.http is defined }}'
+        php: '{{ vhost.php is defined }}'
+        sql: '{{ vhost.sql is defined }}'
+        bundle: '{{ vhost.bundle is defined }}'
+        git: '{{ vhost.git is defined }}'
+
+- name: platform specific
+  block:
+  - include_vars:
+        file: '{{ ansible_distribution }}.yml'
+        name: vhost_dist
+
+- set_fact:
+    # need a different varname: see ansible issue #22025
+    vhost_: '{{ vhost_|combine(vhost, recursive=True) }}'
+
+- include_tasks: '{{ task.file }}'
+  when: task.when
+  loop_control:
+      loop_var: task
+  with_items:
+  # basic setup
+  - file: '{{ ansible_distribution }}.yml'
+    when: true
+
+  # http
+  - file: '{{ vhost_.http.server }}.yml'
+    when: '{{ vhost_modules.http }}'
+
+  # install files
+  - file: bundle.yml
+    when: '{{ vhost_modules.bundle and vhost_.bundle.src|default(false) }}'
+  - file: git.yml
+    when: '{{ vhost_modules.git and vhost_.git.repo|default(false) }}'
+  # http post install
+  - file: '{{ vhost_.http.server }}_post.yml'
+    when: '{{ vhost_modules.http }}'
+  # database
+  - file: sql.yml
+    when: >
+        vhost_modules.sql
+        vhost_.sql.server in ['mysql', 'mariadb']
+ # certificate
+  - file: cert.yml
+    when: '{{ vhost_.cert }}'
+
+
+- name: restart services
+  service: name='{{ item }}' state=restarted
+  with_items:
+      # user defining vhost.http does not implies vhost_.http.server
+      - '{% if vhost_modules.http %}{{ vhost_dist.services[vhost_.http.server] }}{% endif %}'
+      - '{% if vhost_modules.php %}{{ vhost_dist.services.php }}{% endif %}'
+      # user defining vhost.sql does not implies vhost_.sql.server
+      - '{% if vhost_modules.sql %}{{ vhost_dist.services[vhost_.sql.server] }}{% endif %}'
+
+

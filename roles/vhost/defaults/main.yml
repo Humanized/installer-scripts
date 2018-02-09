@@ -4,7 +4,7 @@
 #
 
 # optional modules
-server__:
+vhost__:
     http:
         server: 'nginx'
         enabled: false
@@ -28,16 +28,16 @@ server__:
         pull: false
         force: false
 
-server_:
-    root: '{{ lamp.http.root }}/{{ vhost.domain }}'
+vhost_:
+    root: '{{ vhost_dist.http.root }}/{{ vhost.domain }}'
     cert: true
 
     # optional modules
-    http: '{{ vhost.http is defined and server__.http }}'
-    php:  '{{ vhost.php is defined and server__.php }}'
-    sql:  '{{ vhost.sql is defined and server__.sql }}'
+    http: '{{ vhost.http is defined and vhost__.http }}'
+    php:  '{{ vhost.php is defined and vhost__.php }}'
+    sql:  '{{ vhost.sql is defined and vhost__.sql }}'
 
-    bundle: '{{ vhost.bundle is defined and server__.bundle }}'
-    git: '{{ vhost.git is defined and server__.git }}'
+    bundle: '{{ vhost.bundle is defined and vhost__.bundle }}'
+    git: '{{ vhost.git is defined and vhost__.git }}'
 
 

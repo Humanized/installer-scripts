@@ -1,23 +1,15 @@
 
-- block:
-  - set_fact: bundle=null
-  - set_fact: git=null
-  - set_fact: db=null
 
-  - set_fact: bundle='{{ humhub_.bundle|combine(humhub.bundle, recursive=True) }}'
-    when: humhub.bundle is defined
-  - set_fact: git='{{ humhub_.git|combine(humhub.git, recursive=True) }}'
-    when: humhub.git is defined
-  - set_fact: db='{{ humhub_.db|combine(humhub.db, recursive=True) }}'
-    when: humhub.db is defined
-
+- set_fact:
+    # need a different varname: see ansible issue #22025
+    humhub_: '{{ humhub_|combine(humhub, recursive=True) }}'
 
 - set_fact:
     http_cfg: '{% include("roles/humhub/templates/nginx.j2") %}'
 
 - name: setup humble site
   include_role:
-    name: lamp
+    name: vhost
   vars:
     vhost:
         domain: '{{ humhub.domain }}'
@@ -25,8 +17,8 @@
         http:
             enabled: true
             config_extra: '{{ http_cfg }}'
-        bundle: '{{ bundle }}'
-        git: '{{ git }}'
+        bundle: '{{ humhub_.bundle }}'
+        git: '{{ humhub_.git }}'
         php:
             modules:
             - curl
@@ -34,6 +26,6 @@
             - intl
             - ldap
             - zip
-        sql: '{{ db }}'
+        sql: '{{ humhub_.db }}'
 
 

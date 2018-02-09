@@ -1,0 +1,45 @@
+server {
+    listen 80;
+    server_name {{ vhost_.domain }};
+{% if vhost_.cert %}
+    return 301 https://$server_name$request_uri;
+}
+
+
+server {
+    listen 443 ssl;
+    server_name {{ vhost_.domain }};
+
+    ssl_certificate /etc/letsencrypt/live/{{ vhost_.domain }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ vhost_.domain }}/privkey.pem;
+    ssl_protocols TLSv1.1 TLSv1.2;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+{% endif %}
+
+    access_log /srv/http/{{ vhost_.domain }}/logs/access.log;
+    error_log /srv/http/{{ vhost_.domain }}/logs/error.log;
+
+    index {% if vhost_.http.php %}index.php {% endif %}index.html index.htm;
+
+    location /logs {
+        deny all;
+    }
+
+    location /.well-known {
+        alias /srv/www/{{ vhost_.domain }}/.well-known ;
+    }
+
+    {{ vhost_.http.config_extra }}
+
+    {% if vhost_.http.php %}
+    location ~ \.php$ {
+        fastcgi_index index.php;
+        fastcgi_split_path_info ^(.+\.php)(.*)$;
+        fastcgi_keep_conn on;
+        include {{ vhost_dist.nginx.fastcgi_params }};
+        fastcgi_pass {{ vhost_dist.php.fpm_sock }};
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+    {% endif %}
+}
+

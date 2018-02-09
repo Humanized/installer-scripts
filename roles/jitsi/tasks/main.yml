@@ -1,0 +1,6 @@
+
+- set_fact:
+    jitsi_: '{{ jitsi_|combine(jitsi, recursive=True) }}'
+
+- include_tasks: '{{ ansible_distribution }}.yml'
+

@@ -1,0 +1,33 @@
+
+- apt_repository:
+    repo: deb https://download.jitsi.org stable/
+    state: present
+- apt_key:
+    url: https://download.jitsi.org/jitsi-key.gpg.key
+    state: present
+- apt:
+    name: debconf-utils
+    state: present
+    update_cache: yes
+
+- debconf:
+    name: jitsi-meet-web-config
+    question: jitsi-meet/jvb-serve
+    value: true
+    vtype: boolean
+- debconf:
+    name: jitsi-meet-web-config
+    question: jitsi-videobridge/jvb-hostname
+    value: "{{ jitsi_.domain }}"
+    vtype: string
+
+- name: install jitsi
+  apt:
+    name: jitsi-meet
+    state: latest
+
+- name: lets encrypt jitsi
+  shell: /usr/share/jitsi-meet/scripts/install-letsencrypt-cert.sh
+  when: jitsi_.cert
+
+

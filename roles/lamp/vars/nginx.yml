@@ -1,3 +1,0 @@
-server_config: '/etc/nginx/sites-available/{{ server.domain }}'
-server_enabled_config: '/etc/nginx/sites-enabled/{{ server.domain }}'
-

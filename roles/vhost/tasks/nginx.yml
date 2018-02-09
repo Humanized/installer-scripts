@@ -1,0 +1,32 @@
+#
+# Nginx setup
+#
+
+- include_vars: nginx.yml
+
+- name: setup nginx dirs
+  file:
+      path: '{{ item }}'
+      state: directory
+      owner: '{{ vhost_dist.http.user }}'
+      group: '{{ vhost_dist.http.group }}'
+  with_items:
+  - '{{ vhost_dist.http.root }}'
+  - /etc/nginx/sites-available
+  - /etc/nginx/sites-enabled
+  - '{{ vhost_.root }}'
+
+- name: install site config
+  template:
+      src: '{{ vhost_.http.template or "templates/nginx.j2" }}'
+      dest: '{{ server_config }}'
+      owner: '{{ vhost_dist.http.user }}'
+      group: '{{ vhost_dist.http.group }}'
+- name: site activation
+  when: vhost_.http.enabled|default(false)
+  file:
+      src: '{{ server_config }}'
+      dest: '{{ server_enabled_config }}'
+      state: '{% if vhost_.http.enabled %}link{% else %}absent{% endif %}'
+
+

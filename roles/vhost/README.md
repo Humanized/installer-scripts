@@ -1,5 +1,5 @@
-LAMP
-=========
+vhost
+=====
 
 Install LAMP solution for a particular host.
 
@@ -61,10 +61,10 @@ vhost:
         collation: ''
         # mysql_db.encoding
         encoding: ''
-    ```
 
 
-    Setup/Install site files:
+# Setup/Install site files:
+On the `vhost` object:
 
     ```
     # extract site files from this archive source. If the directory

@@ -6,33 +6,33 @@
   apt: name={{ item }} state=latest
   with_items:
       - nginx
-  when: server.http and server.http.server == 'nginx'
+  when: vhost_modules.http and vhost_.http.server == 'nginx'
 
 
 - name: certbot install
   apt: name={{ item }} state=latest
   with_items:
       - certbot
-  when: server.cert
+  when: vhost_.cert
 
 - name: php install
   apt: name={{ item }} state=latest
   with_items:
       - php
       - php-fpm
-  when: server.php
+  when: vhost_modules.php
 
 - name: php modules install
   apt: name=php-{{ item }} state=latest
-  with_items: '{{ server.php.modules }}'
-  when: server.php and server.php.modules
+  with_items: '{{ vhost_.php.modules }}'
+  when: vhost_modules.php and vhost_.php.modules
 
 - name: sql server install
   apt: name={{ item }} update_cache=yes state=latest
   with_items:
       - python-mysqldb
       - php-mysql
-      - '{{ server.sql.server }}-server'
-  when: server.sql and server.sql.server in ['mariadb','mysql']
+      - '{{ vhost_.sql.server }}-server'
+  when: vhost_modules.sql and vhost_.sql.server in ['mariadb','mysql']
 
 
