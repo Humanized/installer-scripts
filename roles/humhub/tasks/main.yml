@@ -11,15 +11,20 @@
   - set_fact: db='{{ humhub_.db|combine(humhub.db, recursive=True) }}'
     when: humhub.db is defined
 
+
+- set_fact:
+    http_cfg: '{% include("roles/humhub/templates/nginx.j2") %}'
+
 - name: setup humble site
   include_role:
     name: lamp
   vars:
-    server:
+    vhost:
         domain: '{{ humhub.domain }}'
+        admin_email: '{{ humhub.admin_email }}'
         http:
             enabled: true
-            template: 'roles/humhub/templates/nginx.j2'
+            config_extra: '{{ http_cfg }}'
         bundle: '{{ bundle }}'
         git: '{{ git }}'
         php:

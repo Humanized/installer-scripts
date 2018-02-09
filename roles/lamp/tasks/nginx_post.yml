@@ -1,0 +1,28 @@
+#
+# Nginx post-install setup
+#
+
+- include_vars: nginx.yml
+
+# ensure logs dir existence
+- name: ensure log dir exists
+  block:
+  - shell: |
+          grep -m1 --color=never "access_log" "{{ server_config }}" |
+          sed "s/.*access_log\s\+[\"']\?\(.*\)[\"']\?;/\1/" -
+    register: access_log
+  - shell: |
+          grep -m1 --color=never "error_log" "{{ server_config }}" |
+          sed "s/.*error_log\s\+[\"']\?\(.*\)[\"']\?;/\1/" -
+    register: error_log
+  - file:
+      path: '{{ item }}'
+      state: directory
+      owner: '{{ lamp.http.user }}'
+      group: '{{ lamp.http.group }}'
+      # TODO: perms
+    with_items:
+    - '{{ access_log.stdout|dirname }}'
+    - '{{ error_log.stdout|dirname }}'
+
+

@@ -8,6 +8,13 @@
       - nginx
   when: server.http and server.http.server == 'nginx'
 
+
+- name: certbot install
+  apt: name={{ item }} state=latest
+  with_items:
+      - certbot
+  when: server.cert
+
 - name: php install
   apt: name={{ item }} state=latest
   with_items:

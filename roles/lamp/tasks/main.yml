@@ -1,52 +1,67 @@
-
+# Note:
+#   - vhost: user defined configuration of the lamp server
+#   - server: vhost combined with defaults values
+#   We need to keep vhost as is in order to check which services
+#   must be set up.
 
 - name: platform specific
   block:
   - include_vars:
         file: '{{ ansible_distribution }}.yml'
         name: lamp
-
-- set_fact: server_='{{ server_|combine(server, recursive=True) }}'
-- set_fact: lamp_='{{ lamp }}'
-
+- set_fact:
+    server: '{{ server_|combine(vhost, recursive=True) }}'
 
 - include_tasks: '{{ task.file }}'
   when: task.when
-  vars:
-    server: '{{ server_ }}'
-    lamp: '{{ lamp_ }}'
   loop_control:
       loop_var: task
   with_items:
   # basic setup
   - file: '{{ ansible_distribution }}.yml'
     when: true
-  - file: '{{ server_.http.server }}.yml'
-    when: '{{ server_.http }}'
 
-  # site files
+  # http
+  - file: '{{ server.http.server }}.yml'
+    when: '{{ server.http }}'
+
+  # files
   - file: bundle.yml
-    when: '{{ server_.bundle and server_.bundle.src|default(false) }}'
+    when: '{{ server.bundle and server.bundle.src|default(false) }}'
   - file: git.yml
-    when: '{{ server_.git and server_.git.repo|default(false) }}'
+    when: '{{ server.git and server.git.repo|default(false) }}'
 
-  # post install
-  - file: '{{ server_.http.server }}_post.yml'
-    when: '{{ server_.http }}'
-        #- nginx_post.yml
-        #- sql.yml
+  # http post install
+  - file: '{{ server.http.server }}_post.yml'
+    when: '{{ server.http }}'
 
-
-- name: setup mysql
-  include_tasks: sql.yml
-  when: server.sql is defined and
+  # database
+  - file: sql.yml
+    when: >
+        vhost.sql is defined and
         server.sql.server in ['mysql', 'mariadb']
 
+# certificates
+- name: setup certificates
+  block:
+  - service:
+        name: '{{ lamp.services[server.http.server] }}'
+        state: stopped
+  - shell: >
+        certbot certonly -n
+        -d {{ vhost.domain }} -m {{ vhost.admin_email }}
+        --standalone --preferred-challenges http
+        --agree-tos --dry-run
+  when: server.cert
+
+
 - name: restart services
-  service: name={{ item }} state=restarted
+  service: name='{{ item }}' state=restarted
   with_items:
-      - '{% if server.http is defined %}{{ lamp.services[server.http.server] }}{% endif %}'
-      - '{% if server.php is defined %}{{ lamp.services.php }}{% endif %}'
-      - '{% if server.sql is defined %}{{ lamp.services[server.sql.server] }}{% endif %}'
+      # user defining vhost.http does not implies server.http.server
+      - '{% if vhost.http is defined %}{{ lamp.services[server.http.server] }}{% endif %}'
+      - '{% if vhost.php is defined %}{{ lamp.services.php }}{% endif %}'
+      # user defining vhost.sql does not implies server.sql.server
+      - '{% if vhost.sql is defined %}{{ lamp.services[server.sql.server] }}{% endif %}'
 
 

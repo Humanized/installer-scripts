@@ -8,6 +8,9 @@ server__:
     http:
         server: 'nginx'
         enabled: false
+        php: false
+        template: ''
+        config_extra: ''
     php:
         modules: null
     sql:
@@ -25,17 +28,16 @@ server__:
         pull: false
         force: false
 
-
-
 server_:
-    root: '{{ lamp.http.root }}/{{ server.domain }}'
+    root: '{{ lamp.http.root }}/{{ vhost.domain }}'
+    cert: true
 
     # optional modules
-    http: '{{ server.http is defined and server__.http }}'
-    php:  '{{ server.php is defined and server__.php }}'
-    sql:  '{{ server.sql is defined and server__.sql }}'
+    http: '{{ vhost.http is defined and server__.http }}'
+    php:  '{{ vhost.php is defined and server__.php }}'
+    sql:  '{{ vhost.sql is defined and server__.sql }}'
 
-    bundle: '{{ server.bundle is defined and server__.bundle }}'
-    git: '{{ server.git is defined and server__.git }}'
+    bundle: '{{ vhost.bundle is defined and server__.bundle }}'
+    git: '{{ vhost.git is defined and server__.git }}'
 
 
