@@ -22,7 +22,8 @@ humhub:
 
     # optional: get sources an HumHub bundle
     bundle:
-        # required for bundle: humhub version
+        # required for bundle: humhub version (used to generate bundle's
+        # src)
         version: ''
         # optional: use this source instead of official one
         src: ''
