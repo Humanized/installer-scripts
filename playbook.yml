@@ -1,0 +1,49 @@
+- hosts: humhub
+  remote_user: root
+
+  vars:
+      humhub_version: 1.2.4
+      humhub_source: 'https://www.humhub.org/en/download/package/humhub-1.2.4.zip'
+      humhub_enable: yes
+
+  vars_prompt:
+  - name: 'domain'
+    prompt: 'humhub domain'
+    private: no
+  - name: 'admin_email'
+    prompt: 'admin email'
+    private: no
+  - name: 'db_password'
+    prompt: 'password for database'
+    private: yes
+
+  roles:
+      - role: humhub
+        humhub:
+            cert: false
+            domain: '{{ domain }}'
+            admin_email: '{{ admin_email }}'
+            bundle:
+                remote_src: true
+                version: 1.2.4
+            db:
+                password: '{{ db_password }}'
+
+
+- hosts: jitsi
+  remote_user: root
+
+  vars_prompt:
+  - name: 'domain'
+    prompt: 'jitsi domain'
+    private: no
+
+  roles:
+  - role: jitsi
+    jitsi:
+        cert: false
+        domain: 'jitsi.{{ domain }}'
+
+
+
+
