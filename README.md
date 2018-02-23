@@ -19,7 +19,7 @@ Thoses can be instanciated from command-line:
 ansible-playbook humhub.yml --extra-vars "domain=humhub.example.com admin_email=contact@example.com db_password=secret"
 
 # install/setup onlyoffice
-ansible-playbook onlyoffice.yml --extra-vars "port=1312" --extra-vars "domain=debian.localdomain" --extra-vars "db_password=onlyoffice"
+ansible-playbook onlyoffice.yml --extra-vars "vhost_port=1312" --extra-vars "domain=debian.localdomain" --extra-vars "db_password=onlyoffice"
 
 # install/setup jitsi
 ansible-playbook jitsi.yml --extra-vars "domain=jitsi.example.com"
