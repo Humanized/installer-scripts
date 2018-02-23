@@ -1,0 +1,16 @@
+- hosts: jitsi
+  remote_user: root
+
+  vars_prompt:
+  - name: 'domain'
+    prompt: 'jitsi domain'
+    private: no
+
+  roles:
+  - role: jitsi
+    jitsi:
+        cert: false
+        domain: 'jitsi.{{ domain }}'
+
+
+

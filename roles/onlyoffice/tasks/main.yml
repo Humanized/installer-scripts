@@ -1,0 +1,28 @@
+---
+# avoid ssl conf clashes
+- replace:
+    path: /etc/nginx/nginx.conf
+    regexp: '^(\s*)(include /etc/nginx/conf.d/\*.conf;)'
+    replace: '\1#\2\n    include /etc/nginx/includes/onlyoffice-http.conf;'
+
+- set_fact:
+    # need a different varname: see ansible issue #22025
+    onlyoffice_: '{{ onlyoffice_|combine(onlyoffice, recursive=True) }}'
+
+# because onlyoffice package install sucks mostly everything must be in distribution...
+- name: platform specific
+  include_tasks: '{{ ansible_distribution }}.yml'
+
+- set_fact:
+    onlyoffice_vhost_: '{{ onlyoffice_vhost_|combine(onlyoffice.vhost|default({}), recursive=True) }}'
+  vars:
+    onlyoffice_vhost_:
+        domain: '{{ onlyoffice_.domain }}'
+        http: '{{ onlyoffice_.http }}'
+
+- name: setup vhost
+  include_role:
+      name: vhost
+  vars:
+      vhost: '{{ onlyoffice_vhost_ }}'
+

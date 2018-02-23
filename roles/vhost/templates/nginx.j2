@@ -1,23 +1,29 @@
+
+{% if vhost_.cert and not vhost_.http.port %}
 server {
     listen 80;
     server_name {{ vhost_.domain }};
-{% if vhost_.cert %}
     return 301 https://$server_name$request_uri;
 }
+{% endif %}
 
 
 server {
-    listen 443 ssl;
     server_name {{ vhost_.domain }};
+    {% if not vhost_.cert %}
+    listen {{ vhost_.http.port or 80 }};
+    {% else %}
+    listen {{ vhost_.http.port or 443 }} ssl;
 
     ssl_certificate /etc/letsencrypt/live/{{ vhost_.domain }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ vhost_.domain }}/privkey.pem;
 
-    include /etc/nginx/conf.d/vhost_ssl.conf
-{% endif %}
+    include /etc/nginx/conf.d/vhost_ssl.conf;
+    {% endif %}
 
-    access_log /srv/http/{{ vhost_.domain }}/logs/access.log;
-    error_log /srv/http/{{ vhost_.domain }}/logs/error.log;
+    root {{ vhost_.root }};
+    access_log {{ vhost_.root }}/logs/access.log;
+    error_log {{ vhost_.root }}/logs/error.log;
 
     index {% if vhost_.http.php %}index.php {% endif %}index.html index.htm;
 

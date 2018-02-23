@@ -13,9 +13,22 @@
         file: '{{ ansible_distribution }}.yml'
         name: vhost_dist
 
+# combine with defaults
 - set_fact:
     # need a different varname: see ansible issue #22025
     vhost_: '{{ vhost_|combine(vhost, recursive=True) }}'
+
+# use this for file/dir names
+- set_fact:
+    vhost_: '{{ vhost_|combine({ item.key: item.value}) }}'
+  with_dict:
+    vhost_fname: '{{ vhost_.domain }}{% if vhost_.http|default(null) and vhost_.http.port|default(null) %}:{{ vhost_.http.port }}{% endif %}'
+
+# webroot path
+- set_fact:
+    vhost_: '{{ vhost_|combine({ item.key: item.value}) }}'
+  with_dict:
+    root: '{{ vhost_dist.http.root }}/{{ vhost.http is defined and vhost.http.root|default(vhost_.vhost_fname) }}'
 
 - include_tasks: '{{ task.file }}'
   when: task.when

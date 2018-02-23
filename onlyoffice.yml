@@ -1,0 +1,28 @@
+- hosts: onlyoffice
+  remote_user: root
+
+  vars_prompt:
+  - name: 'domain'
+    prompt: 'domain'
+    private: no
+  - name: 'vhost_port'
+    prompt: 'port'
+    private: no
+  - name: 'admin_email'
+    prompt: 'admin email'
+    private: no
+  - name: 'db_password'
+    prompt: 'password for database'
+    private: yes
+
+  roles:
+  - role: onlyoffice
+    onlyoffice:
+        domain: '{{ domain }}'
+        db:
+            password: '{{ db_password }}'
+        http:
+            port: '{{ vhost_port }}'
+        vhost:
+            admin_email: '{{ admin_email }}'
+

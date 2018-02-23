@@ -33,6 +33,6 @@
       - python-mysqldb
       - php-mysql
       - '{{ vhost_.sql.server }}-server'
-  when: vhost_modules.sql and vhost_.sql.server in ['mariadb','mysql']
+  when: false and vhost_modules.sql and vhost_.sql.server in ['mariadb','mysql']
 
 

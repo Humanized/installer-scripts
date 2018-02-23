@@ -4,9 +4,9 @@
 
 - name: certbot
   shell: >
-    certbot certonly -n
+    certbot run -n
     -d {{ vhost.domain }} -m {{ vhost.admin_email }}
     --standalone --preferred-challenges http
-    --agree-tos --dry-run
+    --agree-tos
 
 

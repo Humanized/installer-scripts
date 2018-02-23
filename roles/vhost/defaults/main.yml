@@ -7,7 +7,9 @@
 vhost__:
     http:
         server: 'nginx'
+        port: null
         enabled: false
+        root: null
         php: false
         template: ''
         config_extra: ''
@@ -30,7 +32,6 @@ vhost__:
         force: false
 
 vhost_:
-    root: '{{ vhost_dist.http.root }}/{{ vhost.domain }}'
     cert: true
 
     # optional modules

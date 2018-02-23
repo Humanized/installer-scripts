@@ -34,6 +34,11 @@ vhost:
     # setup site
     http:
         server: nginx
+        # listen to this port (default: 443 when ssl, otherwise 80)
+        # if set, only listen to this port.
+        port: null
+        # root directory
+        root: '{{ domain }}'
         # symlink site config into sites-enabled
         enabled: true
         # enable php in configuration. If enabled, `index.php` will be a

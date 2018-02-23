@@ -15,10 +15,13 @@ Role Variables
 humhub:
     # server domain to use
     domain: ""
-    # `lamp.http.server`
-    http_server: nginx
     # `lamp.sql.server`
     sql_server: mariadb
+
+    # vhost.http options
+    http:
+        # just set vhost.http options here except `config_extra`
+        root: ""
 
     # optional: get sources an HumHub bundle
     bundle:

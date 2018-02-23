@@ -11,9 +11,7 @@
     humhub_vhost_:
         domain: '{{ humhub.domain }}'
         admin_email: '{{ humhub.admin_email }}'
-        http:
-            enabled: true
-            config_extra: '{{ lookup("template", "nginx.j2") }}'
+        http: '{{ humhub_.http }}'
         bundle: '{{ humhub_.bundle }}'
         git: '{{ humhub_.git }}'
         php:

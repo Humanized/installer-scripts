@@ -12,6 +12,11 @@ humhub__:
         encoding: utf8
 
 humhub_:
+    http:
+        enabled: true
+        config_extra: '{{ lookup("template", "nginx.j2") }}'
+
+    # optionals
     bundle: '{{ humhub.bundle is defined and humhub__.bundle }}'
     git: '{{ humhub.git is defined and humhub__.git }}'
     db: '{{ humhub.db is defined and humhub__.db }}'

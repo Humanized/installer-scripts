@@ -1,0 +1,73 @@
+# from https://helpcenter.onlyoffice.com/server/linux/document/linux-installation.aspx
+
+- apt:
+    name: curl
+    state: present
+  when: false
+
+- apt_key:
+    id: '{{ item }}'
+    keyserver: hkp://keyserver.ubuntu.com:80
+    state: present
+  with_items:
+    - CB2DE8E5
+    - 8320CA65CB2DE8E5
+    - 40976EAF437D05B5
+    - 630239CC130E1A7FD81A27B140976EAF437D05B5
+  when: false
+
+- name: add repositories
+  apt_repository:
+    repo: '{{ item }}'
+    state: present
+  with_items:
+  - deb http://archive.ubuntu.com/ubuntu xenial main universe multiverse
+  - deb http://download.onlyoffice.com/repo/debian squeeze main
+  when: false
+
+- name: add up-to-date Node repo
+  shell: curl -sL https://deb.nodesource.com/setup_6.x | sudo bash -
+  when: false
+
+#- name: debconf onlyoffice
+#  debconf:
+#    name: onlyoffice-documentserver
+#    question: onlyoffice/ds-port
+#    value: "{{ onlyoffice.port }}"
+#    vtype: select
+
+- debconf:
+    name: onlyoffice-documentserver
+    question: onlyoffice/db-pwd
+    vtype: password
+    value: "{{ onlyoffice_.db.password }}"
+
+- name: install packages
+  apt:
+    name: '{{ item }}'
+    update_cache: yes
+  with_items:
+  - postgresql
+  - libpq-dev
+  - python-psycopg2
+  - redis-server
+  - rabbitmq-server
+  when: false
+
+- postgresql_db:
+    name: onlyoffice
+  become: true
+  become_user: postgres
+
+- postgresql_user:
+    name: onlyoffice
+    db: onlyoffice
+    # TODO: postgres custom pwd
+    password: "{{ onlyoffice_.db.password }}"
+    priv: ALL
+  become: true
+  become_user: postgres
+
+- name: install onlyoffice documentserver
+  apt:
+      name: onlyoffice-documentserver

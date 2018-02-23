@@ -1,6 +1,9 @@
 #
 # Nginx post-install setup
 #
+# Note: we need post-install because git can't clone in a directory with
+# existing files
+#
 
 - include_vars: nginx.yml
 

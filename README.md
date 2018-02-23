@@ -16,10 +16,13 @@ Thoses can be instanciated from command-line:
 
 ```bash
 # install/setup humhub
-ansible-playbook playbook.yml -l humhub --extra-vars "domain=humhub.example.com admin_email=contact@example.com db_password=secret"
+ansible-playbook humhub.yml --extra-vars "domain=humhub.example.com admin_email=contact@example.com db_password=secret"
+
+# install/setup onlyoffice
+ansible-playbook onlyoffice.yml --extra-vars "port=1312" --extra-vars "domain=debian.localdomain" --extra-vars "db_password=onlyoffice"
 
 # install/setup jitsi
-ansible-playbook playbook.yml -l jitsi --extra-vars "domain=jitsi.example.com"
+ansible-playbook jitsi.yml --extra-vars "domain=jitsi.example.com"
 ```
 
 Note that this requires the inventory to be set up with thoses hosts such as:
@@ -36,6 +39,7 @@ machine.tls
 ## TODO
 - vhost: init sql db with one or more dump files
 - vhost: certbot cron job
+- humhub: defaults' http.config_extra => take configured http server in account
 - Yii integration
 
 
