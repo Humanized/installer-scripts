@@ -14,6 +14,7 @@
   - '{{ vhost_dist.http.root }}'
   - /etc/nginx/sites-available
   - /etc/nginx/sites-enabled
+  - /etc/nginx/includes
   - '{{ vhost_.root }}'
 
 - name: nginx config files
@@ -26,7 +27,7 @@
   - src: '{{ vhost_.http.template or "templates/nginx.j2" }}'
     dest: '{{ server_config }}'
   - src: templates/nginx_ssl.j2
-    dest: /etc/nginx/conf.d/vhost_ssl.conf
+    dest: /etc/nginx/includes/vhost_ssl.conf
 
 - name: site activation
   when: vhost_.http.enabled|default(false)

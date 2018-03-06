@@ -1,10 +1,5 @@
 ---
 # avoid ssl conf clashes
-- replace:
-    path: /etc/nginx/nginx.conf
-    regexp: '^(\s*)(include /etc/nginx/conf.d/\*.conf;)'
-    replace: '\1#\2\n    include /etc/nginx/includes/onlyoffice-http.conf;'
-
 - set_fact:
     # need a different varname: see ansible issue #22025
     onlyoffice_: '{{ onlyoffice_|combine(onlyoffice, recursive=True) }}'
@@ -19,6 +14,12 @@
     onlyoffice_vhost_:
         domain: '{{ onlyoffice_.domain }}'
         http: '{{ onlyoffice_.http }}'
+
+- replace:
+    path: /etc/nginx/nginx.conf
+    regexp: '^(\s*)(include /etc/nginx/conf.d/\*.conf;)'
+    replace: '\1#\2\n    include /etc/nginx/includes/onlyoffice-http.conf;'
+
 
 - name: setup vhost
   include_role:

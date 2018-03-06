@@ -10,8 +10,8 @@
 
 - name: database user
   mysql_user:
-    name: '{{ domain|replace(".","_") }}'
+    name: '{{ vhost_.domain|replace(".","_") }}'
     config_file: '{{ vhost_.sql.config_file|default("~/.my.cnf") }}'
     password: '{{ vhost_.sql.password|default("") }}'
-    priv: "{{ domain|replace('.','_') }}.*:ALL,GRANT"
+    priv: "{{ vhost_.domain|replace('.','_') }}.*:ALL,GRANT"
 

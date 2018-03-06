@@ -5,11 +5,14 @@
   - name: 'domain'
     prompt: 'jitsi domain'
     private: no
+  - name: 'cert'
+    prompt: 'cert?'
+    private: no
 
   roles:
   - role: jitsi
     jitsi:
-        cert: false
+        cert: '{{ cert }}'
         domain: 'jitsi.{{ domain }}'
 
 

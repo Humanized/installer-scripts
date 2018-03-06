@@ -22,7 +22,7 @@
 - set_fact:
     vhost_: '{{ vhost_|combine({ item.key: item.value}) }}'
   with_dict:
-    vhost_fname: '{{ vhost_.domain }}{% if vhost_.http|default(null) and vhost_.http.port|default(null) %}:{{ vhost_.http.port }}{% endif %}'
+    vhost_fname: '{{ vhost_.domain }}{% if vhost_.http|default(null) and vhost_.http.port|default("") %}:{{ vhost_.http.port }}{% endif %}'
 
 # webroot path
 - set_fact:

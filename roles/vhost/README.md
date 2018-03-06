@@ -41,15 +41,13 @@ vhost:
         root: '{{ domain }}'
         # symlink site config into sites-enabled
         enabled: true
-        # enable php in configuration. If enabled, `index.php` will be a
-        # valid index file, prior to html ones.
-        php: false|true,
         # configuration file template
         template: 'templates/nginx.j2',
         # in default config, include this file in virtual host configuration
         config_extra: '',
 
-    # setup php
+    # setup php.
+    # when this object is set, http service configuration will be adapted.
     php:
         # modules names to enable
         modules: ['']

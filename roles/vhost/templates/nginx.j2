@@ -18,14 +18,14 @@ server {
     ssl_certificate /etc/letsencrypt/live/{{ vhost_.domain }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ vhost_.domain }}/privkey.pem;
 
-    include /etc/nginx/conf.d/vhost_ssl.conf;
+    include /etc/nginx/includes/vhost_ssl.conf;
     {% endif %}
 
     root {{ vhost_.root }};
     access_log {{ vhost_.root }}/logs/access.log;
     error_log {{ vhost_.root }}/logs/error.log;
 
-    index {% if vhost_.http.php %}index.php {% endif %}index.html index.htm;
+    index {% if vhost_.php %}index.php {% endif %}index.html index.htm;
 
     location /logs {
         deny all;
@@ -33,7 +33,7 @@ server {
 
     {{ vhost_.http.config_extra }}
 
-    {% if vhost_.http.php %}
+    {% if vhost_.php %}
     location ~ \.php$ {
         fastcgi_index index.php;
         fastcgi_split_path_info ^(.+\.php)(.*)$;

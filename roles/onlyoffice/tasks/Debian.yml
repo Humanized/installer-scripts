@@ -3,7 +3,6 @@
 - apt:
     name: curl
     state: present
-  when: false
 
 - apt_key:
     id: '{{ item }}'
@@ -14,7 +13,6 @@
     - 8320CA65CB2DE8E5
     - 40976EAF437D05B5
     - 630239CC130E1A7FD81A27B140976EAF437D05B5
-  when: false
 
 - name: add repositories
   apt_repository:
@@ -23,17 +21,15 @@
   with_items:
   - deb http://archive.ubuntu.com/ubuntu xenial main universe multiverse
   - deb http://download.onlyoffice.com/repo/debian squeeze main
-  when: false
 
 - name: add up-to-date Node repo
   shell: curl -sL https://deb.nodesource.com/setup_6.x | sudo bash -
-  when: false
 
 #- name: debconf onlyoffice
 #  debconf:
 #    name: onlyoffice-documentserver
 #    question: onlyoffice/ds-port
-#    value: "{{ onlyoffice.port }}"
+#    value: "{{ onlyoffice_.port }}"
 #    vtype: select
 
 - debconf:
@@ -52,7 +48,6 @@
   - python-psycopg2
   - redis-server
   - rabbitmq-server
-  when: false
 
 - postgresql_db:
     name: onlyoffice

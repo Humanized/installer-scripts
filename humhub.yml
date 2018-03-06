@@ -10,7 +10,7 @@
   - name: 'domain'
     prompt: 'humhub domain'
     private: no
-  - name: 'port'
+  - name: 'http_port'
     prompt: 'humhub port'
     private: no
   - name: 'admin_email'
@@ -26,12 +26,16 @@
             cert: false
             domain: '{{ domain }}'
             admin_email: '{{ admin_email }}'
+
+            vhost:
+                cert: false
+
             http:
-                port: '{{ port }}'
+                port: '{{ http_port }}'
 
             bundle:
                 remote_src: true
-                version: 1.2.4
+                version: '{{ humhub_version }}'
             db:
                 password: '{{ db_password }}'
 
