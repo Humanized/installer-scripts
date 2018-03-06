@@ -2,7 +2,7 @@
 http:
     user: www-data
     group: www-data
-    root: /var/www/
+    root: /var/www/html
 
 # system services
 services:
