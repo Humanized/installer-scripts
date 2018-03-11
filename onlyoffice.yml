@@ -14,11 +14,16 @@
   - name: 'db_password'
     prompt: 'password for database'
     private: yes
+  - name: 'allow_from'
+    prompt: 'use onlyoffice from this domain'
+    private: no
 
   roles:
   - role: onlyoffice
     onlyoffice:
         domain: '{{ domain }}'
+        allow_from: '{{ allow_from }}'
+
         db:
             password: '{{ db_password }}'
         http:

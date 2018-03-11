@@ -14,6 +14,8 @@ Role Variables
 ```
 onlyoffice:
     domain: ""
+    # cross-domain issues
+    allow_from: ''
 
     db:
         # database password

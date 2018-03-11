@@ -1,4 +1,7 @@
 ---
+- debug: var=onlyoffice
+- debug: var=onlyoffice_
+
 # avoid ssl conf clashes
 - set_fact:
     # need a different varname: see ansible issue #22025
@@ -15,15 +18,21 @@
         domain: '{{ onlyoffice_.domain }}'
         http: '{{ onlyoffice_.http }}'
 
+- set_fact:
+    onlyoffice_vhost_: '{{ onlyoffice_vhost_|combine(item, recursive=true) }}'
+  with_items:
+  - { "http": { "config_extra": '{{ lookup("template", "nginx.j2") }}' } }
+
+- debug: var=onlyoffice_vhost_
+
 - replace:
     path: /etc/nginx/nginx.conf
     regexp: '^(\s*)(include /etc/nginx/conf.d/\*.conf;)'
     replace: '\1#\2\n    include /etc/nginx/includes/onlyoffice-http.conf;'
 
-
 - name: setup vhost
   include_role:
-      name: vhost
+    name: vhost
   vars:
-      vhost: '{{ onlyoffice_vhost_ }}'
+    vhost: '{{ onlyoffice_vhost_ }}'
 

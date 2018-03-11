@@ -15,7 +15,7 @@
   - /etc/nginx/sites-available
   - /etc/nginx/sites-enabled
   - /etc/nginx/includes
-  - '{{ vhost_.root }}'
+  - '{{ vhost_.http.root }}'
 
 - name: nginx config files
   template:

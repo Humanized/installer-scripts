@@ -4,5 +4,4 @@ onlyoffice_:
         password: onlyoffice
     http:
         enabled: true
-        config_extra: '{{ lookup("template", "nginx.j2") }}'
 

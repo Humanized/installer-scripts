@@ -1,11 +1,11 @@
 
 - set_fact:
     vhost_modules:
-        http: '{{ vhost.http is defined }}'
-        php: '{{ vhost.php is defined }}'
-        sql: '{{ vhost.sql is defined }}'
-        bundle: '{{ vhost.bundle is defined }}'
-        git: '{{ vhost.git is defined }}'
+        http: '{{ vhost.http|default(false) }}'
+        php: '{{ vhost.php|default(false) }}'
+        sql: '{{ vhost.sql|default(false) }}'
+        bundle: '{{ vhost.bundle|default(false) }}'
+        git: '{{ vhost.git|default(false) }}'
 
 - name: platform specific
   block:
@@ -25,10 +25,14 @@
     vhost_fname: '{{ vhost_.domain }}{% if vhost_.http|default(null) and vhost_.http.port|default("") %}:{{ vhost_.http.port }}{% endif %}'
 
 # webroot path
-- set_fact:
-    vhost_: '{{ vhost_|combine({ item.key: item.value}) }}'
-  with_dict:
-    root: '{{ vhost_dist.http.root }}/{{ vhost.http is defined and vhost.http.root|default(vhost_.vhost_fname) }}'
+- block:
+  - set_fact:
+        vhost_: '{{ vhost_|combine({ "http": { "root": item }}, recursive=true) }}'
+    with_items:
+    - '{{ vhost_dist.http.root }}/{{ vhost_.vhost_fname }}'
+    when: vhost.http is not defined or not vhost.http.root|default(false)
+
+
 
 - include_tasks: '{{ task.file }}'
   when: task.when
@@ -53,9 +57,7 @@
     when: '{{ vhost_modules.http }}'
   # database
   - file: sql.yml
-    when: >
-        vhost_modules.sql
-        vhost_.sql.server in ['mysql', 'mariadb']
+    when: '{{ vhost_modules.sql and vhost_.sql.server in ["mysql", "mariadb"] }}'
  # certificate
   - file: cert.yml
     when: '{{ vhost_.cert }}'

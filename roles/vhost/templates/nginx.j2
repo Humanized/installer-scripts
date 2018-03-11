@@ -21,9 +21,10 @@ server {
     include /etc/nginx/includes/vhost_ssl.conf;
     {% endif %}
 
-    root {{ vhost_.root }};
-    access_log {{ vhost_.root }}/logs/access.log;
-    error_log {{ vhost_.root }}/logs/error.log;
+    root {{ vhost_.http.root }};
+
+    access_log {{ vhost_.http.root }}/logs/access.log;
+    error_log {{ vhost_.http.root }}/logs/error.log;
 
     index {% if vhost_.php %}index.php {% endif %}index.html index.htm;
 

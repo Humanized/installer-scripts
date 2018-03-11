@@ -37,8 +37,8 @@ vhost:
         # listen to this port (default: 443 when ssl, otherwise 80)
         # if set, only listen to this port.
         port: null
-        # root directory
-        root: '{{ domain }}'
+        # root directory. If set must be an absolute path.
+        root: '{{ dist_web_root }}/{{ domain }}'
         # symlink site config into sites-enabled
         enabled: true
         # configuration file template

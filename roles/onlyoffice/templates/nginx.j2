@@ -1,6 +1,8 @@
 
     add_header Strict-Transport-Security max-age=31536000;
-    # add_header X-Frame-Options SAMEORIGIN;
+    {% if onlyoffice_.allow_from|default(false) %}
+    add_header X-Frame-Options "ALLOW-FROM {{ onlyoffice_.allow_from }}";
+    {% endif %}
     add_header X-Content-Type-Options nosniff;
     include /etc/nginx/includes/onlyoffice-documentserver-*.conf;
 
